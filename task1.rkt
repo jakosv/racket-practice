@@ -1,0 +1,25 @@
+#lang racket
+
+(define (find_coef v1 v2)
+  (cond ((or (null? v1) (null? v2)) 0)
+        ((not (= (car v1) 0))
+            (/ (car v2) (car v1))
+        )
+        (else (find_coef (cdr v1) (cdr v2)))
+  )
+)
+
+(define (colinear? x1 y1 z1 x2 y2 z2)
+  (let ((coef (find_coef (list x1 y1 z1) (list x2 y2 z2))))
+    (and (= (* x1 coef) x2)
+         (= (* y1 coef) y2)
+         (= (* z1 coef) z2)
+    )
+  )
+)
+
+(find_coef '(1 1 1) '(2 2 2))
+(find_coef '(1 2 3) '(3 6 9))
+(colinear? 1 1 1 2 2 2)
+(colinear? 1 2 3 2 2 2)
+(colinear? 1 2 3 3 6 9)
