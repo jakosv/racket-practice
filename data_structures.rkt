@@ -130,3 +130,59 @@ matcher)
 (define t (insert-bst 1 (insert-bst 4 (insert-bst 3 empty-bst))))
 (println t)
 (member-bst? 4 t)
+
+; BINARY HEAPS
+
+(define empty-heap empty-tree)
+(define empty-heap? empty-tree?)
+(define find-max tree-data)
+(define (insert-heap key tree)
+  (cond ((empty-heap? tree) (make-tree key empty-heap empty-heap))
+        (else
+          (let ((h (find-max tree))) 
+            (cond ((> key h)
+                    (make-tree key (insert-heap h (tree-right tree)) (tree-left tree))
+                  )
+                  (else
+                    (make-tree h (insert-heap key (tree-right tree)) (tree-left tree)) 
+                  )
+            )
+          )
+        )
+  )
+)
+
+(define h empty-heap)
+(insert-heap 3 h)
+(insert-heap 5 (insert-heap 3 h))
+(insert-heap 1 (insert-heap 5 (insert-heap 3 h)))
+(insert-heap 8 (insert-heap 1 (insert-heap 5 (insert-heap 3 h))))
+(insert-heap 2 (insert-heap 8 (insert-heap 1 (insert-heap 5 (insert-heap 3 h)))))
+
+(define (delete-max tree)
+  (cond ((empty-heap? tree) tree)
+        ((empty-heap? (tree-left tree)) (tree-right tree))
+        ((empty-heap? (tree-right tree)) (tree-left tree))
+        (else (let ((left (find-max (tree-left tree)))
+                    (right (find-max (tree-right tree)))
+                   ) (if (>= left right) 
+                        (make-tree left 
+                                   (tree-right tree)
+                                   (delete-max (tree-left tree)))
+                        (make-tree right 
+                                   (insert-heap left (delete-max (tree-right tree)))
+                                   (delete-max (tree-left tree)))
+                      )
+              )
+        )
+  )
+)
+
+(delete-max (insert-heap 3 h))
+(delete-max (insert-heap 5 (insert-heap 3 h)))
+(delete-max (insert-heap 8 (insert-heap 1 (insert-heap 5 (insert-heap 3 h)))))
+(delete-max (insert-heap 2 
+              (insert-heap 8 
+                (insert-heap 1 
+                  (insert-heap 5 
+                    (insert-heap 3 h))))))
