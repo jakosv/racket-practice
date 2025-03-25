@@ -1,0 +1,25 @@
+#lang racket
+
+(define empty-tree #())
+(define make-tree vector)
+(define (tree-data tree) (vector-ref tree 0))
+(define (tree-left tree) (vector-ref tree 1))
+(define (tree-right tree) (vector-ref tree 2))
+(define (empty-tree? t) (equal? t #()))
+
+(define (exists-tree fun-p tree)
+  (call/cc (lambda (cc-exit)
+    (let helper ((tree tree) (fun-p fun-p))
+      (cond ((empty-tree? tree) #f)
+            ((fun-p (tree-data tree)) (cc-exit #t))
+            (else (and (helper (tree-left tree) fun-p)
+                       (helper (tree-right tree) fun-p)))
+      )
+    )
+  ))
+)
+
+(exists-tree odd? #())
+(exists-tree odd? #(1 #() #()))
+(exists-tree odd? #(2 #() #()))
+(exists-tree odd? #(2 #(1 #() #()) #(4 #() #())))
